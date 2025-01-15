@@ -66,15 +66,19 @@ contains
     subroutine writeSorted(unorderedList)
         implicit none
         integer, dimension( : ), allocatable, intent(inout) :: unorderedList
-        integer :: file_ioStat
+        integer :: file_ioStat, i
 
-        open(1, file = 'sortedNUM.txt', action = 'write', iostat = file_ioStat)
+        open(1, file = 'sortedNUM.txt', status = 'replace', action = 'write')
         if(file_ioStat .ne. 0) then 
             write(*, *) "Error: Issue with file access"
             return 
         end if
 
+        do i = 1, size(unorderedList)
+            write(1, *, iostat = file_ioStat) unorderedList(i)
+        end do 
 
+        close(1)
 
 
     end subroutine writeSorted
