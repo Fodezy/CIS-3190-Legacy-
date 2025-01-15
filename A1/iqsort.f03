@@ -1,15 +1,20 @@
 program IQSORT
+    use intIO
     implicit none
+    integer, dimension( : ), allocatable :: unorderedList 
+
     integer, dimension(10) :: a 
     integer :: i 
     a = (/45, 12, 89, 7, 56, 33, 98, 21, 5, 67/)
 
-    call iterativeQsort(a)
+    call readUnsorted(unorderedList)  ! <-- retrieves file content 
 
-    print *, "Sorted Array:"
-    do i = 1, size(a)
-        print *, a(i)
-    end do
+    ! call iterativeQsort(a)
+
+    ! print *, "Sorted Array:"
+    ! do i = 1, size(a)
+    !     print *, a(i)
+    ! end do
 
 contains 
     subroutine iterativeQsort(a)
@@ -67,7 +72,7 @@ contains
                     end if 
                 end do
 
-                if((j - 1) < (r - 1)) then 
+                if((j - l) < (r - 1)) then 
                     if(i < r) then 
                         s = s + 1
                         stack(s)%l = i 
@@ -84,6 +89,10 @@ contains
                 end if
             end do
         end do
+
+
+        deallocate(unorderedList)
+
     end subroutine iterativeQsort
 
 
