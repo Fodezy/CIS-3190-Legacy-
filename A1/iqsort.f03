@@ -1,5 +1,6 @@
 program IQSORT
     use intIO
+    use stackADT
     implicit none
     integer, dimension( : ), allocatable :: unorderedList 
 
@@ -8,6 +9,8 @@ program IQSORT
     a = (/45, 12, 89, 7, 56, 33, 98, 21, 5, 67/)
 
     call readUnsorted(unorderedList)  ! <-- retrieves file content 
+
+    call writeSorted(unorderedList)
 
     ! call iterativeQsort(a)
 
