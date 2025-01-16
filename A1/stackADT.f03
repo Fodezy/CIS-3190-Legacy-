@@ -49,4 +49,27 @@ contains
 
     end subroutine push
 
+    subroutine clear(stack, top_element)
+        implicit none
+        type(ADT_Stack), dimension( : ), intent(inout) :: stack
+        integer, intent(inout) :: top_element
+
+        top_Element = 0
+        stack( : )%left = 0
+        stack( : )%right = 0
+
+
+    end subroutine clear
+
+    integer function isEmpty(top_element)
+        implicit none
+        integer, intent(inout) :: top_element
+         
+        isEmpty = 0 ! set to false 
+
+        if(top_Element == 0) then 
+            isEmpty = 1 ! true 
+        end if
+    end function isEmpty
+
 end module stackADT

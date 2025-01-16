@@ -70,7 +70,7 @@ contains
         integer, dimension( : ), allocatable, intent(inout) :: unorderedList
         integer :: file_ioStat, i
 
-        open(1, file = 'sortedNUM.txt', status = 'replace', action = 'write')
+        open(unit = 1, file = 'sortedNUM.txt', status = 'replace', action = 'write', iostat = file_ioStat)
         if(file_ioStat .ne. 0) then 
             write(*, *) "Error: Issue with file access"
             return 
