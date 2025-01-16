@@ -5,26 +5,48 @@ program IQSORT
     integer, dimension( : ), allocatable :: unorderedList 
 
     integer, dimension(10) :: a 
-    integer :: i 
+    integer :: i, size, maxSize, topElement
+    type(ADT_Stack), dimension(:), allocatable :: myStack
+    type(ADT_Stack) :: newElement, poppedElement
+
     a = (/45, 12, 89, 7, 56, 33, 98, 21, 5, 67/)
+    maxSize = 10
 
-    call readUnsorted(unorderedList)  ! <-- retrieves file content 
 
-    call writeSorted(unorderedList)
+    allocate(myStack(maxSize))
+    myStack = initStack(maxSize)
+    topElement = 0
+
+    size = readUnsorted(unorderedList)
+
+    ! Test pushing items onto the stack
+    ! print *, "Testing stack push:"
+    ! do i = 1, size
+    !     newElement%left = unorderedList(i)
+    !     newElement%right = unorderedList(i) * 2
+    !     call push(myStack, newElement, topElement, maxSize)
+    ! end do
+
+    ! ! Test popping items from the stack
+    ! print *, "Testing stack pop:"
+    ! do i = 1, size
+    !     call pop(myStack, poppedElement, topElement)
+    !     print *, "Popped: ", poppedElement%left, poppedElement%right
+    ! end do
 
     ! call iterativeQsort(a)
 
-    ! print *, "Sorted Array:"
+    ! print *, "Sorted Array:"A
     ! do i = 1, size(a)
     !     print *, a(i)
     ! end do
+    call writeSorted(unorderedList)
 
 contains 
     subroutine iterativeQsort(a)
         implicit none
 
         integer, dimension(:), intent(inout) :: a 
-
         !-----------------------------------------------------
         ! initialize the variables and stack 
         integer, parameter :: m = 5

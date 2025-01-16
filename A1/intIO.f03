@@ -1,7 +1,7 @@
 module intIO 
     implicit none
 contains 
-    subroutine readUnsorted(unorderedList)
+    integer function readUnsorted(unorderedList)
         implicit none 
         integer, dimension( : ), allocatable, intent(inout) :: unorderedList
         integer :: numLines, i, file_ioStat
@@ -34,6 +34,8 @@ contains
             numLines = numLines + 1
         end do
 
+        readUnsorted = numLines
+
         allocate(unorderedList(numLines))
 
         rewind(1)
@@ -61,7 +63,7 @@ contains
 
         close(1)         
 
-    end subroutine readUnsorted
+    end function readUnsorted
 
     subroutine writeSorted(unorderedList)
         implicit none
