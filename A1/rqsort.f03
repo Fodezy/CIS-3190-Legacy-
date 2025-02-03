@@ -1,18 +1,32 @@
+!rqsort.f03: This program uses a recursive quicksort implmentation modeled after this source I found: https://www.geeksforgeeks.org/quick-sort-in-c/ 
+! The sources solves this problem in C, I used it as inspiration and credit it as helping my fortran implmentation 
+! This program reads in a file from the user, stores the unsorted list of integers, then calls the sorting method, then prints sorted values to a file.
+! It also times how long the recurisve sort takes using cpu_time and prints the values to terminal. 
 program RQSORT
     use intIO
 
     implicit none 
     integer, dimension( : ), allocatable :: unorderedList 
     integer :: size
-
-    print *, "Starting recurise sort:"
+    real :: start, end, time
 
     size = readUnsorted(unorderedList)
 
+    print *, "Starting recurise sort:"
+    print *, "Starting timer at: 0 seconds"
+
     ! inspiration and credit for recurive qsort: 
     ! https://www.geeksforgeeks.org/quick-sort-in-c/ 
+    call cpu_time(start)
     call quicksort(unorderedList, 1, size)
+    call cpu_time(end)
     
+
+    time = end - start
+
+    print *, "Time taken", time, "seconds"
+
+
     call writeSorted(unorderedList)
 
     deallocate(unorderedList)

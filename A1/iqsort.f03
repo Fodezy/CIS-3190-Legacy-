@@ -1,6 +1,7 @@
 ! iqsort.f03: This program uses an iterative qucksort moddeled and enhanced from a pascal algorthim. 
 ! It implements a stack based approach to sort the content.
 ! The program reads an unsorted file filled with integers, stores them, sorts them, then writes them to a specified
+! It also tracks how long iterative quicksort takes using cpu_time and prints the value to terminal 
 
 program IQSORT
     use intIO
@@ -11,6 +12,7 @@ program IQSORT
     integer, dimension(:), allocatable :: unorderedList 
     integer :: size, topElement, maxSize
     type(ADT_Stack), dimension(:), allocatable :: myStack
+    real :: start, end, time
 
     ! read in unsorted list and allocate space and set up the stack
     size = readUnsorted(unorderedList)
@@ -19,9 +21,17 @@ program IQSORT
     myStack = initStack(maxSize)
 
     print *, "Starting iterative Sort"
+    print *, "Starting Timer at 0 Second"
 
     ! starts the sorting process
+    call cpu_time(start)
     call iterativeQsort(unorderedList, myStack, maxSize, size)
+    call cpu_time(end)
+
+    time = end - start
+
+    print *, "Ending Timer at: ", time, " Second"
+
     topElement = 0
 
     ! writes sorted list to file
