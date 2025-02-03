@@ -3,6 +3,8 @@
 ! This program reads in a file from the user, stores the unsorted list of integers, then calls the sorting method, then prints sorted values to a file.
 ! It also times how long the recurisve sort takes using cpu_time and prints the values to terminal. 
 program RQSORT
+
+    ! allows access to reading and writing to file methods
     use intIO
 
     implicit none 
@@ -34,7 +36,7 @@ program RQSORT
 
     contains 
 
-    subroutine swap(a, b)
+    subroutine swap(a, b) ! int, int 
         implicit none
         integer, intent(inout) :: a, b 
         integer :: temp 

@@ -1,3 +1,13 @@
+! intIO.f03: This program is made as a module to allow access to it and its methods for other programs.
+! This program has two methods, readUnsorted and writeSorted.
+
+! readUnsorted is used to read in a user defined unsorted file, find the size needed to allocate the list, and store the values within the list.
+! it uses pass by refrence to modify the list within the function, and also returns the size of the file 
+
+! writeSorted is used to write the sorted list into the a file called sortedNUM.txt
+
+!Both of these functions have error handling to ensure operations are stopped if an issue arises such as an invalid file name
+
 module intIO 
     implicit none
 contains 

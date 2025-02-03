@@ -4,7 +4,9 @@
 ! It also tracks how long iterative quicksort takes using cpu_time and prints the value to terminal 
 
 program IQSORT
+    ! allows access to reading and writing to file methods
     use intIO
+    ! allows access to the stack and its methods 
     use stackADT
     implicit none
 
