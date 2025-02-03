@@ -3,7 +3,7 @@ program RQSORT
 
     implicit none 
     integer, dimension( : ), allocatable :: unorderedList 
-    integer :: i, size
+    integer :: size
 
     print *, "Starting recurise sort:"
 
@@ -12,12 +12,10 @@ program RQSORT
     ! inspiration and credit for recurive qsort: 
     ! https://www.geeksforgeeks.org/quick-sort-in-c/ 
     call quicksort(unorderedList, 1, size)
-
-    print *, "Sorted Array:"
-    do i = 1, size
-        print *, unorderedList(i)
-    end do
+    
     call writeSorted(unorderedList)
+
+    deallocate(unorderedList)
 
 
     contains 
