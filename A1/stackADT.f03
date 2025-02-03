@@ -12,7 +12,7 @@ contains
         integer, intent(in) :: arraySize
         type(ADT_Stack), dimension(:), allocatable :: stack
 
-        ! allocate space for the stack based on the number of integers from the input file
+        ! allocate space for the stack based on log(n) where in is number of integers
         allocate(stack(arraySize))
 
         ! initializes all stack elements to be 0

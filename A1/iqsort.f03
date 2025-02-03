@@ -1,23 +1,30 @@
+! iqsort.f03: This program uses an iterative qucksort moddeled and enhanced from a pascal algorthim. 
+! It implements a stack based approach to sort the content.
+! The program reads an unsorted file filled with integers, stores them, sorts them, then writes them to a specified
+
 program IQSORT
     use intIO
     use stackADT
     implicit none
 
+    ! creates dynamic and allocatable array 
     integer, dimension(:), allocatable :: unorderedList 
     integer :: size, topElement, maxSize
     type(ADT_Stack), dimension(:), allocatable :: myStack
 
-    ! Read unsorted list and allocate & initialize the stack
+    ! read in unsorted list and allocate space and set up the stack
     size = readUnsorted(unorderedList)
-    maxSize = ceiling(log(real(size))/log(2.0))
+    maxSize = ceiling(log(real(size)))
     allocate(myStack(maxSize))
     myStack = initStack(maxSize)
 
-    print *, "Startign iterative Sort"
+    print *, "Starting iterative Sort"
 
-    call iterativeQsort(unorderedList, myStack, maxSize)
+    ! starts the sorting process
+    call iterativeQsort(unorderedList, myStack, maxSize, size)
     topElement = 0
 
+    ! writes sorted list to file
     call writeSorted(unorderedList)
 
     deallocate(unorderedList)
@@ -28,29 +35,36 @@ program IQSORT
 
 contains
 
-    subroutine iterativeQsort(unorderedList, myStack, maxSize)
+    subroutine iterativeQsort(unorderedList, myStack, maxSize, size)
         implicit none
 
-        ! Input/Output array to be sorted
+        ! array to be sorted
         integer, dimension(:), intent(inout) :: unorderedList
 
-        ! Stack used to store subarray boundaries
+        ! stack used to store subarray boundaries
         type(ADT_Stack), dimension(:), intent(inout) :: myStack
 
-        ! Maximum size (used for bounds checking)
-        integer, intent(inout) :: maxSize
+        ! maximum size used to check for stack overflow 
+        integer, intent(inout) :: maxSize, size
 
+        ! top_Element used to check for stack underflow and track current position
         integer :: top_Element_Pos, i, j, left, right, pivot, temp
+
+        ! next elemnt to be pushed, and latest element popped
         type(ADT_Stack) :: new_Element, popped_Element
 
         ! Initialize stack with the full array bounds
         top_Element_Pos = 0
         new_Element%left = 1
-        new_Element%right = maxSize
+        new_Element%right = size
+
+        ! first call to push: used to put values onto the top of the stack
         call push(myStack, new_Element, top_Element_Pos, maxSize)
 
-        ! Process subarrays until the stack is empty
+        ! process subarrays until the stack is empty
         do while (top_Element_Pos > 0)
+
+            ! first call to pop: used to retrive values from top of the stack
             call pop(myStack, popped_Element, top_Element_Pos)
             left = popped_Element%left
             right = popped_Element%right
@@ -60,7 +74,7 @@ contains
                 j = right
                 pivot = unorderedList((left + right) / 2)
 
-                ! Partition the subarray around the pivot
+                ! partition the subarray based around the pivot
                 do while (i <= j)
                     do while (unorderedList(i) < pivot)
                         i = i + 1
@@ -77,8 +91,8 @@ contains
                     end if
                 end do
 
-                ! Push the larger subarray onto the stack and continue with the smaller
-                if ((j - left) < (right - 1)) then
+                ! push the larger subarray onto the stack and continue working with the smaller subarray
+                if ((j - left) < (right - i)) then
                     if (i < right) then
                         new_Element%left = i
                         new_Element%right = right
@@ -87,8 +101,8 @@ contains
                     right = j
                 else
                     if (left < j) then
-                        new_Element%left = i
-                        new_Element%right = right
+                        new_Element%left = left
+                        new_Element%right = j
                         call push(myStack, new_Element, top_Element_Pos, maxSize)
                     end if
                     left = i
