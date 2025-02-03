@@ -5,7 +5,7 @@
 ! pop, which is used to pop the top elements off the stack, also has error checking for underflow 
 ! push, which is used to push new values onto the stack, also has error checking for overflow 
 ! clear, which clears all elements in the stack and sets everythin to zero
-! isEmpty, which checks if the stack is empty, returns a boolean value
+! isEmpty, which checks if the stack is empty, returns a integer value zero or one
 
 module stackADT
     implicit none
@@ -32,16 +32,20 @@ contains
 
     subroutine pop(stack, popped_element, top_element)
         implicit none
+
+        !declares intent for each variable 
         type(ADT_Stack), dimension(:), intent(inout) :: stack
         type(ADT_Stack), intent(inout) :: popped_element
         integer, intent(inout) :: top_element
 
+        ! Error checking for underflow otherwise
+        ! saves popped element, and its postition 
         if(top_element == 0) then 
             write(*, *) "Stack underflow error, attempting to remove item but the stack is empty"
             write(*, *) "Ending program ..."
             stop
         else 
-            popped_element = stack(top_element)
+            popped_element = stack(top_element) 
             top_element = top_element - 1  
         end if
 
@@ -49,10 +53,14 @@ contains
 
     subroutine push(stack, new_Element, top_element, arraySize)
         implicit none
+
+        !declares intent for each variable 
         type(ADT_Stack), dimension(:), intent(inout) :: stack
         type(ADT_Stack), intent(inout) :: new_Element
         integer, intent(inout) :: top_element, arraySize
 
+        ! Error checking for overflow, otherwise
+        ! increase range of stack and add new element to top of stack 
         if(top_element >= arraySize) then 
             write(*, *) "Stack overflow error, attempting to add item to a full stack"
             write(*, *) "Ending program ..."
@@ -66,9 +74,12 @@ contains
 
     subroutine clear(stack, top_element)
         implicit none
+
+        !declares intent for each variable 
         type(ADT_Stack), dimension( : ), intent(inout) :: stack
         integer, intent(inout) :: top_element
 
+        ! resets stack to be empty, and inits all values to zero
         top_Element = 0
         stack(:)%left = 0
         stack(:)%right = 0
@@ -76,12 +87,17 @@ contains
 
     end subroutine clear
 
+
     integer function isEmpty(top_element)
         implicit none
+
+        !declares intent for each variable 
         integer, intent(inout) :: top_element
          
         isEmpty = 0 ! set to false 
 
+        ! checks if stack is empty if so 
+        ! return 1 for true 
         if(top_Element == 0) then 
             isEmpty = 1 ! true 
         end if

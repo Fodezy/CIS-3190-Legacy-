@@ -25,9 +25,12 @@ program IQSORT
     print *, "Starting iterative Sort"
     print *, "Starting Timer at 0 Second"
 
-    ! starts the sorting process
+    ! starts timer 
     call cpu_time(start)
+    ! starts the sorting process
     call iterativeQsort(unorderedList, myStack, maxSize, size)
+
+    !ends timer
     call cpu_time(end)
 
     time = end - start
