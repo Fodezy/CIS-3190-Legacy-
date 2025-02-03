@@ -15,7 +15,9 @@ contains
 
         open(unit = 1, file = fname, status = 'old', action = 'read', iostat = file_ioStat)
         if(file_ioStat .ne. 0) then 
-            write(*, *) "Error: Issue with file access"
+            write(*, *) "Error: Issue with opening file access"
+            write(*, *) "Ending program now ..."
+            stop 
             return 
         end if
 
@@ -27,7 +29,9 @@ contains
             end if
 
             if(file_ioStat > 0) then ! handles issues related to the read operation
-                write(*, *) "Error: Issue with read"
+                write(*, *) "Error: Issue with reading from file"
+                write(*, *) "Ending program now ..."
+                stop                
                 return
             end if 
 
@@ -48,20 +52,13 @@ contains
 
             if(file_ioStat > 0) then 
                 write(*, *) "Error: Issue with read"
+                write(*, *) "Ending program now ..."
+                stop
                 return 
             end if 
         end do 
 
-        close(1) 
-
-        write(*, *) "File size: ", numLines
-        write(*, *) "Contents of the file: "
-        
-        do i = 1, numLines
-            write(*, *) unorderedList(i)
-        end do 
-
-        close(1)         
+        close(1)       
 
     end function readUnsorted
 
@@ -72,12 +69,14 @@ contains
 
         open(unit = 1, file = 'sortedNUM.txt', status = 'replace', action = 'write', iostat = file_ioStat)
         if(file_ioStat .ne. 0) then 
-            write(*, *) "Error: Issue with file access"
+            write(*, *) "Error: Issue with opening file access"
+            write(*, *) "Ending program now ..."
+            stop
             return 
         end if
 
         do i = 1, size(unorderedList)
-            write(1, *, iostat = file_ioStat) unorderedList(i)
+            write(1, '(I0)') unorderedList(i)
         end do 
 
         close(1)
