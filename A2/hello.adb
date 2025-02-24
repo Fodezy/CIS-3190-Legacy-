@@ -72,7 +72,8 @@ procedure Hello is
    end loop;
 
    for i in 1 .. 11 loop
-      for j in 1 .. 80 loop 
+      put(indentSize); 
+      for j in 1 .. 80 loop
          put(banner(i)(j));
       end loop;    
       New_Line;       
