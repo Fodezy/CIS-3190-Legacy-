@@ -18,36 +18,30 @@ procedure Hello is
    end isvalid;
 
    procedure banner(year : in Integer; indent : in Integer) is 
-   file : File_Type;
-   line : String(1 .. 200);
-   last : Natural;
-   numLines : Integer := 11;
-   curLine : Integer := 0;
-   printedLines : Integer := 0;
-   startPos : Integer := 1;
 
-   subtype  banner_row is String(1 .. 15);
-   current_banner_row : banner_row;
-   
-   type banner_col is array(1 .. 11) of banner_row;
-   current_banner_col : banner_col;
+      file : File_Type;
+      line_buffer : String(1 .. 50);  -- buffer size 
+      char_read : Natural; -- characters actually read
+      numLines : Integer := 11; -- lines to read from file 
 
-   --  type banner is array(1 .. 80) of String;  -- 60 used, 20 blank space for now 
-   --  full_banner : banner := (others => (others => ' '));
+      curLine : Integer := 0;
+      linesCovered : Integer := 1;
+
+      row_start : Integer := 0;
 
 
-   subtype full_banner_row is string(1 .. 80);
-   full_banner : full_banner_row;
+      type row_banner is array (Integer range 1 .. 80) of Character;
+      type full_banner is array (Integer range 1 .. 11) of row_banner;
+      banner : full_banner := (others => (others => ' '));
 
-   
-   
+      type intArrayOne is array (1 .. 10) of Integer; 
+      type intArrayTwo is array (1 .. 4) of Integer; 
 
-   type intArrayOne is array (1 .. 10) of Integer; 
-   type intArrayTwo is array (1 .. 4) of Integer; 
+      startLine : intArrayOne := (0, 13, 25, 37, 49, 61, 73, 85, 97, 109);
+      yearArr : intArrayTwo;
 
-   startLine : intArrayOne := (0, 13, 25, 37, 49, 61, 73, 85, 97, 109);
-   yearArr : intArrayTwo;
-    
+      indentSize : String := (1 .. indent => ' ');
+
    begin 
 
    yearArr(4) := (Year mod 10) + 1;
@@ -56,74 +50,37 @@ procedure Hello is
    yearArr(1) := ((Year / 1000)) + 1;
 
 
-   Open(file, In_File, "numeric_font.txt");
+   open(file, In_File, "numeric_font.txt");
 
-
-   for i in 1 .. 4 loop 
+   for i in 1 .. 4 loop
       Reset(File);
       curLine := 0;
-      printedLines := 0;
-
-      while not End_Of_File(file) and then (printedLines < numLines) loop 
-         Get_Line(file, line, last);
+      linesCovered := 1;
+      
+      while not End_Of_File(file) and then (linesCovered <= numLines) loop
+         Get_Line(file, line_buffer, char_read);
          curLine := curLine + 1;
-         -- yearArr returns the each char from the year, so 4321 would be [4][3][2][1]
-         -- starLine returns the start line of the number in text file such as line 0 for 0[1], or line 13 for 1[2] ect. (off by one so I add 1 earlier)
-         if curLine >= startLine(yearArr(i)) then -- change 1 later to i 
-            for i in 1 .. last loop 
-               current_banner_row(i) := line(i);
+
+         if curLine >= startLine(yearArr(i)) then -- change to i later 
+            for j in 1 .. char_read loop 
+               banner(linesCovered)(row_start + j) := line_buffer(j);
             end loop;
-            Put_Line(current_banner_row(1 .. last));
-            full_banner(startPos .. startPos + current_banner_row'Length - 1) := current_banner_row;
-            exit;
-            printedLines := printedLines + 1;
+            linesCovered := linesCovered + 1;
          end if;
       end loop;
-      startPos := startPos + 17;
+      row_start := row_start + 18;
    end loop;
 
-   Put_Line (full_banner);
-
-   close(file);
-
-
-
-
-   --  while not End_Of_File(file) and then (printedLines < numLines) loop 
-   --     Get_Line(file, line, last);
-   --     curLine := curLine + 1;
-
-   --     if curLine >= startLine(yearArr(1)) then -- change 1 to i later
-   --        if last >= 15 then 
-   --           current_banner_row := line(1 .. 15);
-   --        else 
-   --           Put_Line("Issue");
-   --        end if;
-   --     Put_Line(current_banner_row);      
-   --     printedLines := printedLines + 1;   
-   --     end if;
-
-   --  end loop;
-
-   --  for i in 1 .. 4 loop 
-   --     Reset(File);
-   --     curLine := 0;
-   --     printedLines := 0;
-
-   --     while not End_Of_File(file) and then (printedLines < numLines) loop 
-   --        Get_Line(file, line, last);
-   --        curLine := curLine + 1;
-
-   --        if curLine >= startLine(yearArr(i)) then 
-   --           Put_Line(line(1 .. Last));
-   --           printedLines := printedLines + 1;
-   --        end if;
-   --     end loop;
-
-   --  end loop;
-   
+   for i in 1 .. 11 loop
+      for j in 1 .. 80 loop 
+         put(banner(i)(j));
+      end loop;    
+      New_Line;       
+   end loop; 
 
    end banner;
+
+   
     
 begin
     -- program to print a greeting message 
@@ -144,7 +101,7 @@ begin
 
    Put_Line ("test print");
 
-   banner (4321, 10);
+   banner (2025, 10);
 
    
 
