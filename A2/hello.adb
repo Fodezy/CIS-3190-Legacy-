@@ -1,8 +1,15 @@
 with Ada.Task_Identification;
 with Ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Strings.Unbounded;        use Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded.Text_IO; use Ada.Strings.Unbounded.Text_IO;
+with Interfaces;
 
 procedure Hello is
+
+   type cal_row is array(Integer range 1 .. 7) of Integer;
+   type cal_month is array(Integer range 1 .. 6) of cal_row;
+   type cal_year is array(Integer range 1 .. 12) of cal_month;
 
    --  determines if the year is valid - 
    function isvalid(year : Integer) return Boolean is
@@ -52,7 +59,6 @@ procedure Hello is
       dayforfirst := (36 + y + (y / 4) - (y / 100) + (y / 400)) mod 7;
 
       firstday := dayforfirst;
-      lang := 2;
 
    end readcalinfo;
 
@@ -94,68 +100,107 @@ procedure Hello is
 
    end numdaysinmonth;
 
-   procedure buildcalender(year : in Integer; month : in out Integer; firstday : in out Integer) is 
-
-      type cal_row is array(Integer range 1 .. 7) of Integer;
-      type cal_month is array(Integer range 1 .. 6) of cal_row;
-      type cal_year is array(Integer range 1 .. 12) of cal_month;
+   function buildcalender(year : in Integer; month : in out Integer; firstday : in out Integer) return cal_year is 
 
       month_grid : cal_month := (others => (others => 0));
 
       year_grid : cal_year := (others => (others => (others => 0)));
 
       counter : Integer := 1;
+
+      lastDayTracker : Integer := 0;
    begin 
 
-   month := numdaysinmonth (month, year);
+   
 
-   Put_Line (Integer'Image(month));
+   --  Put_Line (Integer'Image(month));
 
    firstday := firstday + 1;
 
-   for i in 1 .. 6 loop
-      for j in 1 .. 7 loop
-         if counter > month then
-            exit;
-         end if;
 
-            if i = 1 and then j >= firstday then 
-               month_grid(i)(j) := counter;
-               counter := counter + 1;
+   for m in 1 .. 12 loop 
+      --  Put_Line (Integer'Image(firstday));
+
+      month := numdaysinmonth (m, year);
+
+      monthLoop: for i in 1 .. 6 loop
+         for j in 1 .. 7 loop
+            if counter > month then
+               exit monthLoop;
             end if;
+            lastDayTracker := lastDayTracker + 1;
 
-            if i > 1 then 
-               month_grid(i)(j) := counter;
-               counter := counter + 1;
-            end if;
+               if i = 1 and then j >= firstday then 
+                  month_grid(i)(j) := counter;
+                  counter := counter + 1;
+               end if;
 
-      end loop;
-   end loop;
+               if i > 1 then 
+                  month_grid(i)(j) := counter;
+                  counter := counter + 1;
+               end if;
 
-   year_grid(1) := month_grid;
-
-   --  for i in 1 .. 6 loop
-   --     New_Line;
-   --     for j in 1 .. 7 loop
-   --        Put (month_grid(i)(j), Width => 5);
-   --     end loop;
-   --  end loop;
-
-   for i in 1 ..4 loop 
-      for j in 1 .. 6 loop 
-         for k in 1 .. 3 loop 
-            for l in 1 .. 7 loop 
-               Put(year_grid(k)(j)(l), Width => 3);
-            end loop;
-            Put ("  ");
          end loop;
-         New_Line;
-      end loop;
-      New_Line;
+      end loop monthLoop;
+      year_grid(m) := month_grid;
+
+      firstday := (lastDayTracker mod 7) + 1;
+      lastDayTracker := 0;
+      counter := 1;
+      month_grid := (others => (others => 0));
+
    end loop;
+
+   return year_grid;
+
+   --  for i in 1 ..4 loop 
+   --     for j in 1 .. 6 loop 
+   --        for k in 1 .. 3 loop 
+   --           month_counter := (i - 1) * 3 + k;
+   --           for l in 1 .. 7 loop 
+   --              Put(year_grid(month_counter)(j)(l), Width => 3);
+   --           end loop;
+   --           Put ("  ");
+   --        end loop;
+   --        New_Line;
+   --     end loop;
+   --     New_Line;
+   --  end loop;
 
 
    end buildcalender;
+
+   procedure printrowheading(lang : in Integer; startRange : in Integer; endRange : in Integer) is
+      subtype names is String (1 .. 15);
+      type monthsList is array(Integer range 1 .. 12) of names;
+
+      --  englishList : monthsList := (1 => "January", 2 => "February", 3 => "March", 4 => "April", 5 => "May", 6 => "June", 7 => "July", 8 => "August", 9 => "September", 10 => "October", 11 => "November", 12 => "December");
+      --  frenchList : monthsList := ("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre");
+
+      englishList : MonthsList := (
+      1  => "January        ", 2  => "February       ", 3  => "March          ", 4  => "April          ", 5  => "May            ", 6  => "June           ",  
+      7  => "July           ", 8  => "August         ", 9  => "September      ", 10 => "October        ", 11 => "November       ", 12 => "December       ");
+
+      --  My program would not complie if I used the accents on the months 
+      frenchList : MonthsList := (
+      1  => "Janvier        ", 2  => "Fevrier        ", 3  => "Mars           ", 4  => "Avril          ", 5  => "Mai            ", 6  => "Juin           ",
+      7  => "Juillet        ", 8  => "Aout           ", 9  => "Septembre      ", 10 => "Octobre        ", 11 => "Novembre       ", 12 => "Decembre       ");
+   begin 
+      for i in startRange .. endRange loop 
+
+         if lang = 1 then 
+            put("        " & frenchList(i));
+
+         else 
+            put("        " & englishList(i));
+         end if;
+
+         if i mod 3 = 0 then 
+            New_Line;
+         end if;
+      end loop;
+
+   end printrowheading;
 
 
 
@@ -227,12 +272,17 @@ procedure Hello is
     
    begin
    declare 
-      userChoice : Integer := 0;
-      cal_Year : Integer := 0;
-      cal_firstday : Integer := 0;
-      cal_lang : Integer := 1;
+      year : Integer := 0;
+      firstday : Integer := 0;
+      lang : Integer := 1;
 
-      cal_month : Integer := 1;
+      month : Integer := 1;
+
+      calender : cal_year;
+
+      month_counter : Integer := 0;
+
+      s, e : Integer;
       
    
    begin 
@@ -243,28 +293,29 @@ procedure Hello is
    --  banner (2025, 10);
 
    
-   readcalinfo (cal_Year, cal_firstday, cal_lang);
+   readcalinfo (year, firstday, lang);
 
-   Put_Line (Integer'Image(cal_firstday));
+   calender := buildcalender(year, month, firstday);   -- always start with january (1)
 
-   buildcalender(cal_Year, cal_month, cal_firstday);   -- always start with january (1)
+   s := 1;
+   e := 3;
+   printrowheading(lang, s, e);
 
-   --  Put_Line(Boolean'Image( leapyear (cal_Year)));
+   for i in 1 ..4 loop 
+      for j in 1 .. 6 loop 
+         for k in 1 .. 3 loop 
+            month_counter := (i - 1) * 3 + k;
+            for l in 1 .. 7 loop 
+               Put(calender(month_counter)(j)(l), Width => 3);
+            end loop;
+            Put ("  ");
+         end loop;
+         New_Line;
+      end loop;
+      New_Line;
+   end loop;
 
-   --  Put_Line (Integer'Image( numdaysinmonth(2, cal_Year)));
 
-   --  Put_Line (Integer'Image(cal_Year));
-   --  Put_Line (Integer'Image(cal_firstdat));
-   --  Put_Line (Integer'Image(cal_lang));
-
-   
-   
-   
-   
-   
-   
-   
-   
    end;
    
 
