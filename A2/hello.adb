@@ -1,9 +1,8 @@
+with Ada.Task_Identification;
 with Ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 
 procedure Hello is
-
-   userChoice : Integer := 0;
 
    --  determines if the year is valid - 
    function isvalid(year : Integer) return Boolean is
@@ -16,6 +15,149 @@ procedure Hello is
 
       return rc; 
    end isvalid;
+
+   procedure readcalinfo(year : out Integer; firstday : out Integer; lang : out Integer) is 
+   
+      y : Integer := 0;
+      dayforfirst : Integer := 0;
+   
+   begin 
+
+      New_Line; Put_Line ("Welcome to the Calender Program");  
+
+      put ("Please enter a year: ");
+      get(year);
+
+      while not isvalid (year) loop
+         New_Line; Put_Line ("Invalid Year");
+         Put_Line ("Please Enter a new year: ");
+         Get (year);
+         New_Line;
+      end loop;
+
+      Put_Line ("Would you like the Calender to be in:"); 
+      Put_Line ("French[1]"); 
+      Put_Line ("English[2]");
+      get(lang);
+
+      if lang = 1 then 
+         Put_Line("French Chosen");
+      elsif lang = 2 then 
+         Put_Line("English Chosen");
+      else 
+         put("Incorrect choice provided, exiting program...");
+      end if;
+
+      y := year - 1;
+      dayforfirst := (36 + y + (y / 4) - (y / 100) + (y / 400)) mod 7;
+
+      firstday := dayforfirst;
+      lang := 2;
+
+   end readcalinfo;
+
+   function leapyear(year : Integer) return Boolean is 
+
+      rc : Boolean := false; -- defualt return to false
+   begin 
+
+      if year mod 4 /= 0 then 
+         rc := false;
+      elsif year mod 100 /= 0 then 
+         rc := true;
+      elsif year mod 400 = 0 then 
+         rc := true;
+      else 
+         rc := false;
+      end if;
+
+      return rc;
+
+   end leapyear;
+
+   function numdaysinmonth(month : in Integer; year : in Integer) return Integer is 
+
+      type list is array (1 .. 12) of Integer;
+      daysInMonth : list := (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+   
+   begin 
+
+      if month > 12 or else month < 1 then 
+         Put_Line ("Month is out of range");
+      end if;
+
+      if leapyear (year) and then month = 2 then 
+         daysInMonth(2) := 29;
+      end if;
+
+      return daysInMonth(month);
+
+   end numdaysinmonth;
+
+   procedure buildcalender(year : in Integer; month : in out Integer; firstday : in out Integer) is 
+
+      type cal_row is array(Integer range 1 .. 7) of Integer;
+      type cal_month is array(Integer range 1 .. 6) of cal_row;
+      type cal_year is array(Integer range 1 .. 12) of cal_month;
+
+      month_grid : cal_month := (others => (others => 0));
+
+      year_grid : cal_year := (others => (others => (others => 0)));
+
+      counter : Integer := 1;
+   begin 
+
+   month := numdaysinmonth (month, year);
+
+   Put_Line (Integer'Image(month));
+
+   firstday := firstday + 1;
+
+   for i in 1 .. 6 loop
+      for j in 1 .. 7 loop
+         if counter > month then
+            exit;
+         end if;
+
+            if i = 1 and then j >= firstday then 
+               month_grid(i)(j) := counter;
+               counter := counter + 1;
+            end if;
+
+            if i > 1 then 
+               month_grid(i)(j) := counter;
+               counter := counter + 1;
+            end if;
+
+      end loop;
+   end loop;
+
+   year_grid(1) := month_grid;
+
+   --  for i in 1 .. 6 loop
+   --     New_Line;
+   --     for j in 1 .. 7 loop
+   --        Put (month_grid(i)(j), Width => 5);
+   --     end loop;
+   --  end loop;
+
+   for i in 1 ..4 loop 
+      for j in 1 .. 6 loop 
+         for k in 1 .. 3 loop 
+            for l in 1 .. 7 loop 
+               Put(year_grid(k)(j)(l), Width => 3);
+            end loop;
+            Put ("  ");
+         end loop;
+         New_Line;
+      end loop;
+      New_Line;
+   end loop;
+
+
+   end buildcalender;
+
+
 
    procedure banner(year : in Integer; indent : in Integer) is 
 
@@ -83,27 +225,47 @@ procedure Hello is
 
    
     
-begin
-    -- program to print a greeting message 
-   New_Line; Put_Line ("Welcome to the Calender Program");  
-   Put_Line ("Would you like the Calender to be in:"); 
-   Put_Line ("French[1]"); 
-   Put_Line ("English[2]");
-   get(userChoice);
+   begin
+   declare 
+      userChoice : Integer := 0;
+      cal_Year : Integer := 0;
+      cal_firstday : Integer := 0;
+      cal_lang : Integer := 1;
 
-   if userChoice = 1 then 
-      Put_Line("French Chosen");
-   elsif userChoice = 2 then 
-      Put_Line("English Chosen");
-   else 
-      put("Incorrect choice provided, exiting program...");
-      return; 
-   end if;
+      cal_month : Integer := 1;
+      
+   
+   begin 
+   
+   
+  
 
-   Put_Line ("test print");
+   --  banner (2025, 10);
 
-   banner (2025, 10);
+   
+   readcalinfo (cal_Year, cal_firstday, cal_lang);
 
+   Put_Line (Integer'Image(cal_firstday));
+
+   buildcalender(cal_Year, cal_month, cal_firstday);   -- always start with january (1)
+
+   --  Put_Line(Boolean'Image( leapyear (cal_Year)));
+
+   --  Put_Line (Integer'Image( numdaysinmonth(2, cal_Year)));
+
+   --  Put_Line (Integer'Image(cal_Year));
+   --  Put_Line (Integer'Image(cal_firstdat));
+   --  Put_Line (Integer'Image(cal_lang));
+
+   
+   
+   
+   
+   
+   
+   
+   
+   end;
    
 
     
