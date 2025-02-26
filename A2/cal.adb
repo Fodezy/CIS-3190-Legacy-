@@ -1,11 +1,7 @@
-with Ada.Task_Identification;
 with Ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Strings.Unbounded;        use Ada.Strings.Unbounded;
-with Ada.Strings.Unbounded.Text_IO; use Ada.Strings.Unbounded.Text_IO;
-with Interfaces;
 
-procedure Hello is
+procedure Cal is
 
    type cal_row is array(Integer range 1 .. 7) of Integer;
    type cal_month is array(Integer range 1 .. 6) of cal_row;
@@ -170,7 +166,7 @@ procedure Hello is
 
    end buildcalender;
 
-   procedure printrowmonth(calender : in cal_year; i : in out Integer) is 
+   procedure printrowmonth(calender : in cal_year; i : in Integer) is 
       month_counter : Integer := 0;
 
    begin 
@@ -191,7 +187,7 @@ procedure Hello is
 
    end printrowmonth;
 
-   procedure printrowheading(lang : in Integer; startRange : in Integer; endRange : in Integer; calender : in out cal_year) is
+   procedure printrowheading(lang : in Integer; calender : in cal_year) is
       subtype names is String (1 .. 15);
       type monthsList is array(Integer range 1 .. 12) of names;
       
@@ -201,20 +197,20 @@ procedure Hello is
       --  englishList : monthsList := (1 => "January", 2 => "February", 3 => "March", 4 => "April", 5 => "May", 6 => "June", 7 => "July", 8 => "August", 9 => "September", 10 => "October", 11 => "November", 12 => "December");
       --  frenchList : monthsList := ("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre");
 
-      englishList : MonthsList := (
+       englishList : constant MonthsList := (
       1  => "January        ", 2  => "   February    ", 3  => "      March    ", 4  => "April          ", 5  => "   May         ", 6  => "      June     ",  
       7  => "July           ", 8  => "   August      ", 9  => "      September", 10 => "October        ", 11 => "   November    ", 12 => "      December ");
 
       --  My program would not compile if I used the accents on the months 
-      frenchList : MonthsList := (
+      frenchList : constant MonthsList := (
       1  => "Janvier        ", 2  => "   Fevrier     ", 3  => "      Mars     ", 4  => "Avril          ", 5  => "   Mai         ", 6  => "      Juin     ",
       7  => "Juillet        ", 8  => "   Aout        ", 9  => "      Septembre", 10 => "Octobre        ", 11 => "   Novembre    ", 12 => "      Decembre ");
 
 
-      englishWeek : weekList := (
+      englishWeek : constant weekList := (
          1  => "Su", 2  => "Mo", 3  => "Tu", 4  => "We", 5  => "Th", 6  => "Fr", 7 => "Sa");
 
-      frenchhWeek : weekList := (
+      frenchhWeek : constant weekList := (
          1  => "Di", 2  => "Lu", 3  => "Ma", 4  => "Me", 5  => "Je", 6  => "Ve", 7 => "Sa");
 
          counter : Integer := 0;
@@ -276,7 +272,7 @@ procedure Hello is
       file : File_Type;
       line_buffer : String(1 .. 50);  -- buffer size 
       char_read : Natural; -- characters actually read
-      numLines : Integer := 11; -- lines to read from file 
+      numLines : constant Integer  := 11; -- lines to read from file 
 
       curLine : Integer := 0;
       linesCovered : Integer := 1;
@@ -291,10 +287,10 @@ procedure Hello is
       type intArrayOne is array (1 .. 10) of Integer; 
       type intArrayTwo is array (1 .. 4) of Integer; 
 
-      startLine : intArrayOne := (0, 13, 25, 37, 49, 61, 73, 85, 97, 109);
+      startLine : constant intArrayOne := (0, 13, 25, 37, 49, 61, 73, 85, 97, 109);
       yearArr : intArrayTwo;
 
-      indentSize : String := (1 .. indent => ' ');
+      indentSize : constant String := (1 .. indent => ' ');
 
    begin 
 
@@ -346,8 +342,6 @@ procedure Hello is
       month : Integer := 1;
 
       calender : cal_year;
-
-      s, e : Integer;
       
    
    begin 
@@ -363,9 +357,8 @@ procedure Hello is
 
    banner (year, 11);
    New_Line;
-   s := 1;
-   e := 3;
-   printrowheading(lang, s, e, calender);
+
+   printrowheading(lang, calender);
 
 
 
@@ -374,4 +367,4 @@ procedure Hello is
    
 
     
-end Hello;
+end Cal;
