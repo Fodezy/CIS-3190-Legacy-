@@ -170,35 +170,102 @@ procedure Hello is
 
    end buildcalender;
 
-   procedure printrowheading(lang : in Integer; startRange : in Integer; endRange : in Integer) is
+   procedure printrowmonth(calender : in cal_year; i : in out Integer) is 
+      month_counter : Integer := 0;
+
+   begin 
+
+   --  for i in 1 ..4 loop -- change this to range parameters dont need this loop anymore 
+      for j in 1 .. 6 loop 
+         for k in 1 .. 3 loop 
+            month_counter := (i - 1) * 3 + k;
+            for l in 1 .. 7 loop 
+               Put(calender(month_counter)(j)(l), Width => 4);
+            end loop;
+            Put ("  ");
+         end loop;
+         New_Line;
+      end loop;
+      New_Line;
+   --  end loop;
+
+   end printrowmonth;
+
+   procedure printrowheading(lang : in Integer; startRange : in Integer; endRange : in Integer; calender : in out cal_year) is
       subtype names is String (1 .. 15);
       type monthsList is array(Integer range 1 .. 12) of names;
+      
+      subtype day is String(1 .. 2);
+      type weekList is array(Integer range 1 .. 7) of day;
 
       --  englishList : monthsList := (1 => "January", 2 => "February", 3 => "March", 4 => "April", 5 => "May", 6 => "June", 7 => "July", 8 => "August", 9 => "September", 10 => "October", 11 => "November", 12 => "December");
       --  frenchList : monthsList := ("Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre");
 
       englishList : MonthsList := (
-      1  => "January        ", 2  => "February       ", 3  => "March          ", 4  => "April          ", 5  => "May            ", 6  => "June           ",  
-      7  => "July           ", 8  => "August         ", 9  => "September      ", 10 => "October        ", 11 => "November       ", 12 => "December       ");
+      1  => "January        ", 2  => "   February    ", 3  => "      March    ", 4  => "April          ", 5  => "   May         ", 6  => "      June     ",  
+      7  => "July           ", 8  => "   August      ", 9  => "      September", 10 => "October        ", 11 => "   November    ", 12 => "      December ");
 
-      --  My program would not complie if I used the accents on the months 
+      --  My program would not compile if I used the accents on the months 
       frenchList : MonthsList := (
-      1  => "Janvier        ", 2  => "Fevrier        ", 3  => "Mars           ", 4  => "Avril          ", 5  => "Mai            ", 6  => "Juin           ",
-      7  => "Juillet        ", 8  => "Aout           ", 9  => "Septembre      ", 10 => "Octobre        ", 11 => "Novembre       ", 12 => "Decembre       ");
+      1  => "Janvier        ", 2  => "   Fevrier     ", 3  => "      Mars     ", 4  => "Avril          ", 5  => "   Mai         ", 6  => "      Juin     ",
+      7  => "Juillet        ", 8  => "   Aout        ", 9  => "      Septembre", 10 => "Octobre        ", 11 => "   Novembre    ", 12 => "      Decembre ");
+
+
+      englishWeek : weekList := (
+         1  => "Su", 2  => "Mo", 3  => "Tu", 4  => "We", 5  => "Th", 6  => "Fr", 7 => "Sa");
+
+      frenchhWeek : weekList := (
+         1  => "Di", 2  => "Lu", 3  => "Ma", 4  => "Me", 5  => "Je", 6  => "Ve", 7 => "Sa");
+
+         counter : Integer := 0;
+
+         month_counter : Integer := 0;
    begin 
-      for i in startRange .. endRange loop 
 
-         if lang = 1 then 
-            put("        " & frenchList(i));
 
-         else 
-            put("        " & englishList(i));
-         end if;
+      for k in 1 .. 4 loop 
+         for l in 1 .. 3 loop 
+            month_counter := (k - 1) * 3 + l;
+            if lang = 1 then  
+               put("            " & frenchList(month_counter));
 
-         if i mod 3 = 0 then 
-            New_Line;
-         end if;
+            else 
+               put("            " & englishList(month_counter));
+            end if;
+
+            if l mod 3 = 0 then 
+               New_Line;
+            end if;
+         end loop;
+
+         put("  ");
+      
+         for i in 1 .. 3 loop 
+
+            for j in 1 .. 7 loop
+
+               if lang = 1 then 
+                  put(frenchhWeek(j) & "  ");
+               else 
+                  put(englishWeek(j) & "  ");
+               end if; 
+
+            end loop;
+            put("  ");
+
+         end loop;
+         counter := k;
+         New_Line;
+         printrowmonth(calender, counter);
+
+
+         New_Line;
+
       end loop;
+
+
+      New_Line;
+
 
    end printrowheading;
 
@@ -280,8 +347,6 @@ procedure Hello is
 
       calender : cal_year;
 
-      month_counter : Integer := 0;
-
       s, e : Integer;
       
    
@@ -290,30 +355,19 @@ procedure Hello is
    
   
 
-   --  banner (2025, 10);
 
    
    readcalinfo (year, firstday, lang);
 
    calender := buildcalender(year, month, firstday);   -- always start with january (1)
 
+   banner (year, 11);
+   New_Line;
    s := 1;
    e := 3;
-   printrowheading(lang, s, e);
+   printrowheading(lang, s, e, calender);
 
-   for i in 1 ..4 loop 
-      for j in 1 .. 6 loop 
-         for k in 1 .. 3 loop 
-            month_counter := (i - 1) * 3 + k;
-            for l in 1 .. 7 loop 
-               Put(calender(month_counter)(j)(l), Width => 3);
-            end loop;
-            Put ("  ");
-         end loop;
-         New_Line;
-      end loop;
-      New_Line;
-   end loop;
+
 
 
    end;
