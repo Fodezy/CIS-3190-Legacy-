@@ -149,21 +149,6 @@ procedure Cal is
 
    return year_grid;
 
-   --  for i in 1 ..4 loop 
-   --     for j in 1 .. 6 loop 
-   --        for k in 1 .. 3 loop 
-   --           month_counter := (i - 1) * 3 + k;
-   --           for l in 1 .. 7 loop 
-   --              Put(year_grid(month_counter)(j)(l), Width => 3);
-   --           end loop;
-   --           Put ("  ");
-   --        end loop;
-   --        New_Line;
-   --     end loop;
-   --     New_Line;
-   --  end loop;
-
-
    end buildcalender;
 
    procedure printrowmonth(calender : in cal_year; i : in Integer) is 
@@ -176,7 +161,11 @@ procedure Cal is
          for k in 1 .. 3 loop 
             month_counter := (i - 1) * 3 + k;
             for l in 1 .. 7 loop 
-               Put(calender(month_counter)(j)(l), Width => 4);
+               if calender(month_counter)(j)(l) = 0 then 
+                  Put("    ");
+               else 
+                  Put(calender(month_counter)(j)(l), Width => 4);
+               end if;
             end loop;
             Put ("  ");
          end loop;
@@ -290,7 +279,7 @@ procedure Cal is
       startLine : constant intArrayOne := (0, 13, 25, 37, 49, 61, 73, 85, 97, 109);
       yearArr : intArrayTwo;
 
-      indentSize : constant String := (1 .. indent => ' ');
+      indentSize : constant   String := (1 .. indent => ' ');
 
    begin 
 
