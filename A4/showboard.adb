@@ -150,8 +150,8 @@ procedure ShowBoard is
     end buildBottomRow;
 
     function buildMiddleRow(N : in Integer; tileType: in Integer) return cell_column is
-        totalCell : Integer := 4 * N + 1;
-        tileConditional : Integer := 1;  -- if N is even start on cell 1, if odd start on cell 2
+        totalCell : constant Integer := 4 * N + 1;
+        tileConditional : Integer := 1;  -- if N is even start on cell 2, if odd start on cell 1
         cellIndex : Integer;
         line : cell_line;
         column : cell_column;
@@ -208,6 +208,10 @@ procedure ShowBoard is
         -- 3. Bottom Row
     -- size: 
         -- size of the chess board: N x N --> size x size
+    --tileType: used to determine starting position of tiles within the middle rows
+        -- even number: start on odd cell 
+        -- odd number: start on even cell
+        -- kind of clucnk that its like this, but my brain is pretty fried and it's working so im not fixing this. Also kinda makes sense  
     function buildRowType(rowType : in Integer; size : In Integer; tileType: in Integer) return cell_column is
         column : cell_column;
     begin 
