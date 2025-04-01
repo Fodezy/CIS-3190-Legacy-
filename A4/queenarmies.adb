@@ -6,6 +6,9 @@ procedure QueenArmies is
    type row is array(1 .. 10 ) of Integer; -- have min set to 3 max set to 10
    type column is array(1 .. 10) of row; -- same as row
 
+   type set is array(1 .. 2) of Integer;
+   type full_set is array(Positive range <>) of set;
+
    function validateN(n : in Integer ) return Boolean is
    begin
       if(n > 10 or else n < 3) then 
@@ -57,9 +60,11 @@ procedure QueenArmies is
       Get (m);
    end loop;
 
-   New_Line; New_Line;
+
 
    while( n < 2 * m) loop
+
+      New_Line; New_Line;
       Put_Line ("Invalid combination for M and N, values cannot co-exist together");
 
       n := 0;
@@ -82,8 +87,6 @@ procedure QueenArmies is
 
    end loop;
 
-      New_Line; New_Line;
-
 
    New_Line; New_Line;
    Put_Line ("Choosen Values are Valid: ");
@@ -104,7 +107,7 @@ procedure QueenArmies is
 
    end testArrays;
 
-   function isAccrossLineSafe(board : in column; row : in Integer; n : in Integer; queenType : in Integer) return Boolean is
+   function isAccrossLineSafe(board : in column; row, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := True;
 
    begin 
@@ -125,7 +128,7 @@ procedure QueenArmies is
 
    end isAccrossLineSafe;
 
-   function isDownLineSafe(board : in column; column : in Integer; n : in Integer; queenType : in Integer) return Boolean is
+   function isDownLineSafe(board : in column; column, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := True;
    begin
 
@@ -145,7 +148,7 @@ procedure QueenArmies is
 
    end isDownLineSafe;
 
-   function isLineSafe(board : in column; row : in Integer ;column : in Integer; n : in Integer; queenType : in Integer) return Boolean is
+   function isLineSafe(board : in column; row, column, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := False;
    begin
 
@@ -157,7 +160,7 @@ procedure QueenArmies is
 
    end isLineSafe;
 
-   function isDiagonalsRigthSafe(board : in column; column, row, n, queenType : in Integer) return Boolean is
+   function isDiagonalsRigthSafe(board : in column; row, column, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := True;
 
       --  reduced checking current position 
@@ -167,8 +170,18 @@ procedure QueenArmies is
 
       -- checks down to the right 
       while row_spot <= n and then column_spot <= n loop
+
+         if queenType = 1 then 
+            if board(row_spot)(column_spot) = 2 then 
+               isSafe := False;
+            end if;
+         else 
+            if board(row_spot)(column_spot) = 1 then 
+               isSafe := False;
+            end if; 
+         end if;
       
-         Put(Integer'Image(board(row_spot)(column_spot)) & " ");
+         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
 
          row_spot := row_spot + 1;
@@ -182,11 +195,21 @@ procedure QueenArmies is
 
       -- checks up and to the right
       while row_spot >= 1 and then column_spot <= n loop 
-         Put(Integer'Image(board(row_spot)(column_spot)) & " ");
+
+         if queenType = 1 then 
+            if board(row_spot)(column_spot) = 2 then 
+               isSafe := False;
+            end if;
+         else 
+            if board(row_spot)(column_spot) = 1 then 
+               isSafe := False;
+            end if; 
+         end if;
+         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot - 1;
          column_spot := column_spot + 1;
-         New_Line;
+         --  New_Line;
 
       end loop;
 
@@ -195,7 +218,7 @@ procedure QueenArmies is
 
    end isDiagonalsRigthSafe;
 
-   function isDiagonalsLeftSafe(board : in column; column, row, n, queenType : in Integer) return Boolean is
+   function isDiagonalsLeftSafe(board : in column; row, column, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := True;
 
       --  reduced checking current position 
@@ -205,11 +228,22 @@ procedure QueenArmies is
 
       -- checks up and to the left
       while row_spot >= 1 and then column_spot >= 1 loop 
-         Put(Integer'Image(board(row_spot)(column_spot)) & " ");
+
+
+         if queenType = 1 then 
+            if board(row_spot)(column_spot) = 2 then 
+               isSafe := False;
+            end if;
+         else 
+            if board(row_spot)(column_spot) = 1 then 
+               isSafe := False;
+            end if; 
+         end if;
+         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot - 1;
          column_spot := column_spot - 1;
-         New_Line;
+         --  New_Line;
 
       end loop;
 
@@ -219,11 +253,22 @@ procedure QueenArmies is
 
       -- checks down and to the left
       while row_spot <= n and then column_spot >= 1 loop 
-         Put(Integer'Image(board(row_spot)(column_spot)) & " ");
+
+
+         if queenType = 1 then 
+            if board(row_spot)(column_spot) = 2 then 
+               isSafe := False;
+            end if;
+         else 
+            if board(row_spot)(column_spot) = 1 then 
+               isSafe := False;
+            end if; 
+         end if;
+         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot + 1;
          column_spot := column_spot - 1;
-         New_Line;
+         --  New_Line;
 
       end loop;
 
@@ -231,33 +276,72 @@ procedure QueenArmies is
 
    end isDiagonalsLeftSafe;
 
-   procedure placeQueen(n : in Integer; m : in Integer; board : in out column) is 
+   function isDiagonalsSafe(board : in column; column, row, n, queenType : in Integer) return Boolean is
+      isSafe : Boolean := False;
+   begin
+
+      if isDiagonalsLeftSafe(board, column, row, n, queenType) and then isDiagonalsRigthSafe(board, column, row, n, queenType) then 
+         isSafe := True;
+      end if;
+
+      return isSafe;
+   end isDiagonalsSafe;
+
+   function placeQueen(n : in Integer; m : in Integer; board : in out column) return full_set is 
 
       whiteQueen : constant Integer := 1;
       blackQueen : constant Integer := 2;
 
+      singleSet : set := (0, 0);
+      fullSet : full_set(1 .. 8) := (others => (others => 0));
+
       h : Boolean;
    begin 
 
-      board(1)(1) := 1;
-      board(2)(2) := 2;
-      board(3)(3) := 3;
-      board(1)(3) := 4;
-      board(3)(1) := 9;
-      board(3)(2) := 8;
-      
+      for Q in 1 .. (m * 2) loop 
+         boardLoop: for i in 1 .. n loop
+            for j in 1 .. n loop 
 
-      Put_Line(Boolean'Image( isLineSafe(board, 2, 2, n, blackQueen) ));
+            if Q mod 2 = 1 then -- when on odd numbers place white queen
 
+               if isLineSafe(board, i, j, n, whiteQueen) and then isDiagonalsSafe(board, i, j, n, whiteQueen) then 
+                  if board(i)(j) /= whiteQueen then 
+                     board(i)(j) := whiteQueen;
 
-      if isLineSafe(board, 2, 2, n, blackQueen) then 
-         board(2)(2) := blackQueen;
-      end if;
+                     singleSet(1) := i;
+                     singleSet(2) := j;
+                     Put_Line ("White:" & Integer'Image(i) & " "  & Integer'Image(j));
+                     exit boardLoop;
+                  end if; 
+               end if;
 
-      --  h := isDiagonalsRigthSafe(board, 2, 3, n, blackQueen);
+            else 
 
-      h := isDiagonalsLeftSafe(board, 3, 2, n, blackQueen);
+               if isLineSafe(board, i, j, n, blackQueen) and then isDiagonalsSafe(board, i, j, n, blackQueen) then 
+                  if board(i)(j) /= blackQueen then 
+                     board(i)(J) := blackQueen;
 
+                     singleSet(1) := i;
+                     singleSet(2) := j;
+                     Put_Line ("Black:" & Integer'Image(i) & " "  & Integer'Image(j));
+                     Put_Line (Integer'Image(board(i)(J)));
+                     exit boardLoop;
+                  end if;
+               end if;
+
+            end if;
+
+            end loop;
+         end loop boardLoop;
+
+         fullSet(Q) := singleSet;
+
+         --  Put_Line ("Values for I:" & Integer'Image(fullSet(Q)(1)));
+         --  Put_Line ("Values for J:" & Integer'Image(fullSet(Q)(2)));
+
+      end loop;
+
+      return fullSet;
 
 
    end placeQueen;
@@ -269,14 +353,20 @@ procedure QueenArmies is
          n : Integer := 0; -- chess board size max 10, i think min 3
          m : Integer := 0; -- number of queens max 4, min 1
 
-
-         board : column := (others => (others => -1));
+         set : full_set(1 .. 8); -- 8 should be max allowed 
+         board : column := (others => (others => 0));
 
       begin 
 
       readBoardInfo(n, m);
 
-      placeQueen (n, m, board);
+      set := placeQueen (n, m, board);
+
+      for i in set'Range loop 
+         Put_Line ("Values for I:" & Integer'Image(set(i)(1)));
+         Put_Line ("Values for J:" & Integer'Image(set(i)(2)));
+         New_Line;
+      end loop;
 
       testArrays (n, board);
    end;
