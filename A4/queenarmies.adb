@@ -1,13 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use ada.Integer_Text_IO;
 
-procedure QueenArmies is 
-
-   type row is array(1 .. 10 ) of Integer; -- have min set to 3 max set to 10
-   type column is array(1 .. 10) of row; -- same as row
-
-   type set is array(1 .. 2) of Integer;
-   type full_set is array(Positive range <>) of set;
+package body QueenArmies is 
 
    function validateN(n : in Integer ) return Boolean is
    begin
@@ -186,7 +180,7 @@ procedure QueenArmies is
 
          row_spot := row_spot + 1;
          column_spot := column_spot + 1;
-         New_Line;
+         --  New_Line;
       end loop;
 
       --  reduced checking current position 
@@ -292,7 +286,7 @@ procedure QueenArmies is
       whiteQueen : constant Integer := 1;
       blackQueen : constant Integer := 2;
 
-      singleSet : set := (0, 0);
+      singleSet : single_set := (0, 0);
       fullSet : full_set(1 .. 8) := (others => (others => 0));
 
       h : Boolean;
@@ -310,7 +304,7 @@ procedure QueenArmies is
 
                      singleSet(1) := i;
                      singleSet(2) := j;
-                     Put_Line ("White:" & Integer'Image(i) & " "  & Integer'Image(j));
+                     --  Put_Line ("White:" & Integer'Image(i) & " "  & Integer'Image(j));
                      exit boardLoop;
                   end if; 
                end if;
@@ -323,8 +317,8 @@ procedure QueenArmies is
 
                      singleSet(1) := i;
                      singleSet(2) := j;
-                     Put_Line ("Black:" & Integer'Image(i) & " "  & Integer'Image(j));
-                     Put_Line (Integer'Image(board(i)(J)));
+                     --  Put_Line ("Black:" & Integer'Image(i) & " "  & Integer'Image(j));
+                     --  Put_Line (Integer'Image(board(i)(J)));
                      exit boardLoop;
                   end if;
                end if;
@@ -347,28 +341,28 @@ procedure QueenArmies is
    end placeQueen;
 
 
-   begin 
-      declare
+   --  begin 
+   --     declare
 
-         n : Integer := 0; -- chess board size max 10, i think min 3
-         m : Integer := 0; -- number of queens max 4, min 1
+   --        n : Integer := 0; -- chess board size max 10, i think min 3
+   --        m : Integer := 0; -- number of queens max 4, min 1
 
-         set : full_set(1 .. 8); -- 8 should be max allowed 
-         board : column := (others => (others => 0));
+   --        set : full_set(1 .. 8); -- 8 should be max allowed 
+   --        board : column := (others => (others => 0));
 
-      begin 
+   --     begin 
 
-      readBoardInfo(n, m);
+   --     readBoardInfo(n, m);
 
-      set := placeQueen (n, m, board);
+   --     set := placeQueen (n, m, board);
 
-      for i in set'Range loop 
-         Put_Line ("Values for I:" & Integer'Image(set(i)(1)));
-         Put_Line ("Values for J:" & Integer'Image(set(i)(2)));
-         New_Line;
-      end loop;
+   --     for i in set'Range loop 
+   --        Put_Line ("Values for I:" & Integer'Image(set(i)(1)));
+   --        Put_Line ("Values for J:" & Integer'Image(set(i)(2)));
+   --        New_Line;
+   --     end loop;
 
-      testArrays (n, board);
-   end;
+   --     testArrays (n, board);
+   --  end;
 
 end QueenArmies;

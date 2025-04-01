@@ -1,5 +1,7 @@
 with Ada.Wide_Text_IO; use Ada.Wide_Text_IO;
+with Ada.Integer_Wide_Wide_Text_IO; use Ada.Integer_Wide_Wide_Text_IO;
 with Ada.Unchecked_Deallocation;
+with QueenArmies; use QueenArmies;
 
 procedure ShowBoard is
 
@@ -10,8 +12,8 @@ procedure ShowBoard is
     procedure Free_Wide_String is new Ada.Unchecked_Deallocation(Wide_String, WS_Access);
 
     -- queen unicode characters (see: https://www.wikiwand.com/en/articles/Chess_symbols_in_Unicode)
-    White_Queen : constant Wide_String := "♕";
-    Black_Queen : constant Wide_String := "♛";
+    White_Queen : constant Wide_String := "♛";
+    Black_Queen : constant Wide_String := "♕";
 
     -- chess board box drawing characters (see: https://www.wikiwand.com/en/articles/Box-drawing_characters)
     Horz_Wall : constant Wide_String := "│";
@@ -35,6 +37,8 @@ procedure ShowBoard is
     type cell_column is array (1 .. 3) of cell_line; -- 3 columns per box
 
     type chess_board is array (1 .. 10) of cell_column; -- max 10 columns
+
+    type solutons is array(1 .. 2) of chess_board;
 
     -- Free a single cell
     --  procedure freeIndividualCell(column : in out WS_Access) is 
@@ -237,48 +241,153 @@ procedure ShowBoard is
     begin 
         for I in line'Range loop
             if line(I) /= null then 
-                return True;
+                return False;
             end if;
         end loop;
 
-        return False;
+        return True;
     end isRowEmpty;
+
+    procedure putQueensOnBoard(chessBoard : in out chess_board; set : full_set; n : in Integer; m : in Integer; flipMod : in Integer) is 
+        row : Integer;
+        column : Integer;
+        totalCell : constant Integer := 4 * n + 1;
+        cellIndex : Integer;
+    begin 
+
+        -- chessBoard[1][2][3]:
+        -- 1. is the row index 
+        -- 2. is the row where the top row's middle is index 2 and the rest are index 1
+        -- 3. is the index within the each line
+
+        for i in 1 .. (m * 2) loop -- loop for all queens needing to be placed 
+            row := set(i)(1);
+            column := set(i)(2);
+
+            if row = 1 then 
+                --  chessBoard(row)(2)(?) -- dont know about the third spot yet  
+                for j in 1 .. totalCell loop
+                    cellIndex := (j - 1) / 4 + 1;
+
+                    if cellIndex = column and then j mod 2 /= 0 and then j /= 1 and then (j -1) mod 4 /= 0 then 
+
+                        if i mod 2 = flipMod then 
+                            chessBoard(row)(2)(j) := new Wide_String'(White_Queen);
+                        else 
+                            chessBoard(row)(2)(j) := new Wide_String'(Black_Queen);
+                        end if;
+                    end if;
+
+                end loop;
+            else 
+
+                for j in 1 .. totalCell loop
+                    cellIndex := (j - 1) / 4 + 1;
+
+                    if cellIndex = column and then j mod 2 /= 0 and then j /= 1 and then (j -1) mod 4 /= 0 then 
+                        if i mod 2 = flipMod then 
+                            chessBoard(row)(1)(j) := new Wide_String'(White_Queen);
+                        else 
+                            chessBoard(row)(1)(j) := new Wide_String'(Black_Queen);
+                        end if;
+                    end if; 
+                end loop;
+
+            end if; 
+        end loop; 
+
+    end putQueensOnBoard;
 
     begin
         declare 
-            N : constant Integer := 10;
+            n : Integer := 0;
+            m : Integer := 0;
+            chessBoard : chess_board := (others => (others => (others => null)));
+            distinctSolutions : solutons;
+
+            -- from package 
+            gridBoard : column := (others => (others => 0));
+            set : full_set(1 .. 8);
 
             --  colOne : cell_column := buildRowType(1, N);
             --  colTwo : cell_column;
             --  colThree : cell_column := buildRowType(3, N);
-            board : chess_board := (others => (others => (others => null)));
+            --  board : chess_board := (others => (others => (others => null)));
             --  board : chess_board;
 
 
         begin
 
-            board(1) := buildRowType(1, N, 1);
-            for I in 2 .. (N - 1) loop
-                board(I) := buildRowType(2, N, I);
-            end loop;
-            board(N) := buildRowType(3, N, 1);
+            -- from package 
+            ReadBoardInfo (n, m);
+            
 
-            for Box in 1 .. N loop
-                -- For each cell_column (box) in the chess board:
-                for Row in board(Box)'Range loop
-                    if isRowEmpty (board(Box)(Row)) then 
-                        -- For each cell_line (i.e. a horizontal row within the cell column)
-                        for Col in board(Box)(Row)'Range loop
-                            if board(Box)(Row)(Col) /= null then
-                                Put(board(Box)(Row)(Col).all);
-                            else
-                                Put(" ");
-                            end if;
-                        end loop;
-                        New_Line;
-                    end if;
+            chessBoard(1) := buildRowType(1, n, 0);
+            for i in 2 .. (n - 1) loop 
+                chessBoard(i) := buildRowType(2, n, i);
+            end loop; 
+            chessBoard(n) := buildRowType(3, n, 0);
+
+            set := PlaceQueen(n, m, gridBoard);
+            --  testArrays (n, gridBoard);
+
+            putQueensOnBoard(chessBoard, set, n, m, 0);
+            distinctSolutions(1) := chessBoard;
+            putQueensOnBoard(chessBoard, set, n, m, 1);
+            distinctSolutions(2) := chessBoard;
+            
+
+
+            --  for i in 1 .. (m * 2) loop 
+            --      if i mod 2 = 1 then -- odd numbers place white
+            --          chessBoard(set(i)(1))() := 
+            --      else -- even place black 
+            --          chessBoard(set(i)(1))(set(i)(2)) := 
+
+            --      end if;
+            --  end loop;
+
+            for i in 1 .. 2 loop 
+            New_Line;
+
+            Put ("Disitinct Solution:");
+            New_Line;
+
+                for box in 1 .. n loop 
+                    for row in distinctSolutions(i)(box)'Range loop
+                        if not isRowEmpty (distinctSolutions(i)(box)(row)) then 
+                            for column in distinctSolutions(i)(box)(row)'Range loop 
+                                if distinctSolutions(i)(box)(row)(column) /= null then 
+                                    Put(distinctSolutions(i)(box)(row)(column).all);
+                                else 
+                                    Put(" ");
+                                end if;
+                            end loop;
+                            New_Line;
+                        end if;
+                    end loop;
                 end loop;
+
             end loop;
+
+            
+
+            --  for Box in 1 .. N loop
+            --      -- For each cell_column (box) in the chess board:
+            --      for Row in board(Box)'Range loop
+            --          if isRowEmpty (board(Box)(Row)) then 
+            --              -- For each cell_line (i.e. a horizontal row within the cell column)
+            --              for Col in board(Box)(Row)'Range loop
+            --                  if board(Box)(Row)(Col) /= null then
+            --                      Put(board(Box)(Row)(Col).all);
+            --                  else
+            --                      Put(" ");
+            --                  end if;
+            --              end loop;
+            --              New_Line;
+            --          end if;
+            --      end loop;
+            --  end loop;
 
         end;
 end ShowBoard;
