@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "COBOL debugger",
+      "type": "gdb",
+      "request": "launch",
+
+      // The arguments passed to cobc. Equivalent to: cobc -free -x -Wall
+      "cobcargs": ["-free", "-x", "-Wall"],
+
+      // The COBOL source file(s) to compile. 
+      // If your extension expects a list, put them here; 
+      // if it needs a single file, just ["statmold.cob"].
+      "group": ["statmold.cob"]
+    }
+    
+  ],
+  "program": "${workspaceFolder}/statmold" 
+
+}

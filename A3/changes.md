@@ -21,3 +21,6 @@ statmold.cob:77: warning: overlapping MOVE may produce unpredictable results [-W
 statmold.cob: in paragraph 'INPUT-LOOP':
 statmold.cob:102: warning: overlapping MOVE may produce unpredictable results [-Woverlap]
 
+After thrid set of changes
+
+
