@@ -1,3 +1,14 @@
+--  Name: Eric Fode
+--  Email: efode@uoguelp.ca
+--  id: 1233839
+--  Date Created: 31/03/2025
+--  Date Completed: 05/04/2025
+
+--  Course: CIS*3190 
+--  Assignment: 4   
+
+--  This file is used to share the functions and procedures needed in showboard from queensarmies, it also declares types here so they are accesssable in both files.
+
 package QueenArmies is 
 
    type row is array(1 .. 10 ) of Integer; -- have min set to 3 max set to 10
