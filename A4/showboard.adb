@@ -346,6 +346,32 @@ procedure ShowBoard is
 
     end putQueensOnBoard;
 
+    procedure printBoard(boards : in solutons; n : in Integer) is 
+    begin 
+
+        for i in 1 .. 2 loop 
+            New_Line;
+            Put ("Disitinct Solution:");
+            New_Line;
+
+            for box in 1 .. n loop 
+                for row in boards(i)(box)'Range loop
+                    if not isRowEmpty (boards(i)(box)(row)) then 
+                        for column in boards(i)(box)(row)'Range loop 
+                            if boards(i)(box)(row)(column) /= null then 
+                                Put(boards(i)(box)(row)(column).all);
+                            else 
+                                Put(" ");
+                            end if;
+                        end loop;
+                        New_Line;
+                    end if;
+                end loop;
+            end loop;
+        end loop;
+
+    end printBoard;
+
 begin
     declare 
         n : Integer := 0;
@@ -376,29 +402,9 @@ begin
         putQueensOnBoard(chessBoard, set, n, m, 1);
         distinctSolutions(2) := chessBoard;
         
+        printBoard(distinctSolutions, n);
 
-        for i in 1 .. 2 loop 
-
-            New_Line;
-            Put ("Disitinct Solution:");
-            New_Line;
-
-            for box in 1 .. n loop 
-                for row in distinctSolutions(i)(box)'Range loop
-                    if not isRowEmpty (distinctSolutions(i)(box)(row)) then 
-                        for column in distinctSolutions(i)(box)(row)'Range loop 
-                            if distinctSolutions(i)(box)(row)(column) /= null then 
-                                Put(distinctSolutions(i)(box)(row)(column).all);
-                            else 
-                                Put(" ");
-                            end if;
-                        end loop;
-                        New_Line;
-                    end if;
-                end loop;
-            end loop;
-        end loop;
-
+       
         Free_Chess_Board (chessBoard);
 
         end;
