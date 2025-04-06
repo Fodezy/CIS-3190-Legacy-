@@ -1,7 +1,34 @@
+--  Name: Eric Fode
+--  Email: efode@uoguelp.ca
+--  id: 1233839
+--  Date Created: 31/03/2025
+--  Date Completed: 05/04/2025
+
+--  Course: CIS*3190 
+--  Assignment: 4   
+
+--  This file is used to preform user input validaton, the logic and computes the algorithm for safe placement of the queens, and returns a set of tuples corresponding to each queen spot 
+--  This file invloves reading in the user input and:
+--    1. validate if n is within 3 and 10, if not re asks the user for new value 
+--    2. validate if m is within 1 and 4, if not re ask the user for a new value
+--    3. if the two values provide no solution, tell them and reprompt for a new m value 
+
+--  Next it will preform the logic to find the spots to place the queens. It makes use of helper functions that check 
+--  1. The row and column if it is safe
+--  Each diagonal if it is safe
+--  If it is it calls its self again for the next queen position and does the same checks. If all queens are placed return a set of tuples containing the spot for each queen 
+--  If a queen cannot be placed it back tracks and removes the last queen placed and finds the next spot to place it, then repeats the checks going until the last queen is placed
+--  It will keep backtracking until either all queens are placed or it tries every spot, the second case should never happen as I validate the combo at the start 
+--  This function returns true when a queen is placed and recalls, when all placed return true and dont recall, when no solution return false.
+--  Checks return of this function and returns the set of spots.
+
 with Ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use ada.Integer_Text_IO;
 
 package body QueenArmies is 
+
+   type m_allowed_array is array(3 .. 10) of Integer;
+   mAllowed : constant m_allowed_array := (3 => 1, 4 => 2, 5 => 4, 6 => 4, 7 => 4, 8 => 4, 9 => 4, 10 => 4);
 
    function validateN(n : in Integer ) return Boolean is
    begin
@@ -21,71 +48,67 @@ package body QueenArmies is
       return True;
    end validateM;
 
+   procedure validateCombo(n : in Integer; m : in out Integer) is 
+   begin
+
+      while (m > mAllowed(n)) loop
+         New_Line;
+         Put_Line ("Combo not allowed, Please Pick New Value for M");
+         Put_Line ("Please Pick the Number of Queens on the board (1 to 4)");
+         Put("M: ");
+         Get(m);
+
+         while ( not validateM(m)) loop 
+            New_Line;
+            Put_Line ("Invalid Input for M");
+            Put_Line ("Please enter new value for M");
+            Put ("M: ");
+            Get (m);
+         end loop;
+
+      end loop;
+
+      New_Line; New_Line;
+      Put_Line ("Choosen Values are Valid: ");
+      Put_Line ("N:" & Integer'Image(n));
+      Put_Line ("M:" & Integer'Image(m));
+
+   end validateCombo;
+
    procedure readBoardInfo(n: out Integer; m : out Integer) is
    begin 
 
-   New_Line;
-   Put_Line ("Welcome to CHESS ARMIES OF QUEENS");
-   Put_Line ("The goal of Peaceful Armies of Queens is to arrange m black queens and m white queens on an n-by-n square grid, (the board),");
-   Put_Line("so that no queen attacks another of a different colour.");
-   New_Line;
-
-   Put_Line ("Please Pick the size of the board where 10 >= N >= 3");
-   Put("N: ");
-   Get(n);
-
-   while ( not validateN(n)) loop 
       New_Line;
-      Put_Line ("Invalid Input for N");
-      Put_Line ("Please enter new value for N");
-      Put ("N: ");
-      Get (n);
-   end loop;
-
-   Put_Line ("Please Pick the Number of Queens on the board where 4 >= M >= 1");
-   Put("M: ");
-   Get(m);
-
-   while ( not validateM(m)) loop 
+      Put_Line ("Welcome to CHESS ARMIES OF QUEENS");
+      Put_Line ("The goal of Peaceful Armies of Queens is to arrange m black queens and m white queens on an n-by-n square grid, (the board),");
+      Put_Line("so that no queen attacks another of a different colour.");
       New_Line;
-      Put_Line ("Invalid Input for M");
-      Put_Line ("Please enter new value for M");
-      Put ("M: ");
-      Get (m);
-   end loop;
 
+      Put_Line ("Please Pick the size of the board (3 to 10)");
+      Put("N: ");
+      Get(n);
 
-
-   while( n < 2 * m) loop
-
-      New_Line; New_Line;
-      Put_Line ("Invalid combination for M and N, values cannot co-exist together");
-
-      n := 0;
-      m := 0;
       while ( not validateN(n)) loop 
          New_Line;
-         Put_Line ("Invalid Input for N");
+         Put_Line ("Invalid Input for N (3 to 10)");
          Put_Line ("Please enter new value for N");
          Put ("N: ");
          Get (n);
       end loop;
 
+      Put_Line ("Please Pick the Number of Queens on the board (1 to 4)");
+      Put("M: ");
+      Get(m);
+
       while ( not validateM(m)) loop 
          New_Line;
-         Put_Line ("Invalid Input for M");
+         Put_Line ("Invalid Input for M ( 1 to 4)");
          Put_Line ("Please enter new value for M");
          Put ("M: ");
          Get (m);
       end loop;
 
-   end loop;
-
-
-   New_Line; New_Line;
-   Put_Line ("Choosen Values are Valid: ");
-   Put_Line ("N:" & Integer'Image(n));
-   Put_Line ("M:" & Integer'Image(m));
+      validateCombo(n, m);
 
    end readBoardInfo;
 
@@ -175,9 +198,6 @@ package body QueenArmies is
             end if; 
          end if;
       
-         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
-
-
          row_spot := row_spot + 1;
          column_spot := column_spot + 1;
          --  New_Line;
@@ -199,11 +219,9 @@ package body QueenArmies is
                isSafe := False;
             end if; 
          end if;
-         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot - 1;
          column_spot := column_spot + 1;
-         --  New_Line;
 
       end loop;
 
@@ -223,7 +241,6 @@ package body QueenArmies is
       -- checks up and to the left
       while row_spot >= 1 and then column_spot >= 1 loop 
 
-
          if queenType = 1 then 
             if board(row_spot)(column_spot) = 2 then 
                isSafe := False;
@@ -233,11 +250,9 @@ package body QueenArmies is
                isSafe := False;
             end if; 
          end if;
-         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot - 1;
          column_spot := column_spot - 1;
-         --  New_Line;
 
       end loop;
 
@@ -248,7 +263,6 @@ package body QueenArmies is
       -- checks down and to the left
       while row_spot <= n and then column_spot >= 1 loop 
 
-
          if queenType = 1 then 
             if board(row_spot)(column_spot) = 2 then 
                isSafe := False;
@@ -258,11 +272,9 @@ package body QueenArmies is
                isSafe := False;
             end if; 
          end if;
-         --  Put(Integer'Image(board(row_spot)(column_spot)) & " ");
 
          row_spot := row_spot + 1;
          column_spot := column_spot - 1;
-         --  New_Line;
 
       end loop;
 
@@ -270,99 +282,83 @@ package body QueenArmies is
 
    end isDiagonalsLeftSafe;
 
-   function isDiagonalsSafe(board : in column; column, row, n, queenType : in Integer) return Boolean is
+   function isDiagonalsSafe(board : in column; row, column, n, queenType : in Integer) return Boolean is
       isSafe : Boolean := False;
    begin
 
-      if isDiagonalsLeftSafe(board, column, row, n, queenType) and then isDiagonalsRigthSafe(board, column, row, n, queenType) then 
+      if isDiagonalsLeftSafe(board, row, column, n, queenType) and then isDiagonalsRigthSafe(board, row, column, n, queenType) then 
          isSafe := True;
       end if;
 
       return isSafe;
    end isDiagonalsSafe;
 
+   function isSpotSafe(board : in column; row, column, n, queenType : in Integer) return Boolean is
+      isSafe : Boolean := False;
+   begin 
+      if isLineSafe (board, row, column, n, queenType) and then isDiagonalsSafe (board, row, column, n, QueenType) then
+         isSafe := True;
+      end if;
+
+      return isSafe;
+
+   end isSpotSafe;
+
    function placeQueen(n : in Integer; m : in Integer; board : in out column) return full_set is 
 
       whiteQueen : constant Integer := 1;
       blackQueen : constant Integer := 2;
+      totalQueens : constant Integer := 2 * m;
 
-      singleSet : single_set := (0, 0);
+      --  singleSet : single_set := (0, 0);
       fullSet : full_set(1 .. 8) := (others => (others => 0));
 
-      h : Boolean;
-   begin 
+      --  h : Boolean;
 
-      for Q in 1 .. (m * 2) loop 
-         boardLoop: for i in 1 .. n loop
-            for j in 1 .. n loop 
+      function replaceQueen(queen : in Integer) return Boolean is 
 
-            if Q mod 2 = 1 then -- when on odd numbers place white queen
+         queenType : Integer := 0;
+      begin 
 
-               if isLineSafe(board, i, j, n, whiteQueen) and then isDiagonalsSafe(board, i, j, n, whiteQueen) then 
-                  if board(i)(j) /= whiteQueen then 
-                     board(i)(j) := whiteQueen;
-
-                     singleSet(1) := i;
-                     singleSet(2) := j;
-                     --  Put_Line ("White:" & Integer'Image(i) & " "  & Integer'Image(j));
-                     exit boardLoop;
-                  end if; 
-               end if;
-
+         --  base case: when all queens have been placed 
+         if queen > totalQueens then 
+            return true;
+         else 
+            if queen mod 2 = 1 then 
+               queenType := whiteQueen;
             else 
-
-               if isLineSafe(board, i, j, n, blackQueen) and then isDiagonalsSafe(board, i, j, n, blackQueen) then 
-                  if board(i)(j) /= blackQueen then 
-                     board(i)(J) := blackQueen;
-
-                     singleSet(1) := i;
-                     singleSet(2) := j;
-                     --  Put_Line ("Black:" & Integer'Image(i) & " "  & Integer'Image(j));
-                     --  Put_Line (Integer'Image(board(i)(J)));
-                     exit boardLoop;
-                  end if;
-               end if;
-
+               queenType := blackQueen;
             end if;
 
+            for i in 1 .. n loop
+               for j in 1 .. n loop
+               if board(i)(j) = 0 and then isSpotSafe (board,i ,j, n, queenType) then 
+                     board(i)(j) := queenType;
+                     fullSet(queen)(1) := i;
+                     fullSet(queen)(2) := j;
+                     if replaceQueen (queen + 1) then 
+                        return true;
+                     else 
+                        board(i)(j) := 0;
+                     end if;                     
+                  end if;
+               end loop;
             end loop;
-         end loop boardLoop;
 
-         fullSet(Q) := singleSet;
+            return False;
+         end if;
 
-         --  Put_Line ("Values for I:" & Integer'Image(fullSet(Q)(1)));
-         --  Put_Line ("Values for J:" & Integer'Image(fullSet(Q)(2)));
+      end replaceQueen;
 
-      end loop;
+   begin 
 
-      return fullSet;
-
+      if replaceQueen(1) then 
+         return fullSet;
+      else 
+         fullSet := (others => (others => 0));
+         return fullSet;
+      end if;
 
    end placeQueen;
-
-
-   --  begin 
-   --     declare
-
-   --        n : Integer := 0; -- chess board size max 10, i think min 3
-   --        m : Integer := 0; -- number of queens max 4, min 1
-
-   --        set : full_set(1 .. 8); -- 8 should be max allowed 
-   --        board : column := (others => (others => 0));
-
-   --     begin 
-
-   --     readBoardInfo(n, m);
-
-   --     set := placeQueen (n, m, board);
-
-   --     for i in set'Range loop 
-   --        Put_Line ("Values for I:" & Integer'Image(set(i)(1)));
-   --        Put_Line ("Values for J:" & Integer'Image(set(i)(2)));
-   --        New_Line;
-   --     end loop;
-
-   --     testArrays (n, board);
-   --  end;
 
 end QueenArmies;
